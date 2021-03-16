@@ -357,7 +357,7 @@ gapi._bs = new Date().getTime();
                 var handlers = putIfAbsent(ctx, "CP", []),
                     len = handlers.length;
                 handlers[len] = function(moduleMain) {
-                    if (!u) return 0;
+                    if (!moduleMain) return 0;
                     advancedPerfLog("ml1", currentTokens, I);
                     var doTasksAndCallback = function(paramCallback) {
                             handlers[len] = null;
