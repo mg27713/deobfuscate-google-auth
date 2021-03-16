@@ -10,15 +10,15 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         this.Jw = [];
         this.gL = a;
         this.lH = b || null;
-        this.Jq = this.shouldCheckSingleCall = !1;
+        this.Jq = this.canceled = !1; // xn = canceled
         this.ij = void 0;
         this.notCalled = this.ZR = this.zy = !1; // false
         this.errorTimeout = 0; // QQ.nx = QQ.errorTimeout
         this.$a = null;
         this.By = 0
     };
-    ctx.QQ.prototype.cancel = function(a) {
-        if (this.shouldCheckSingleCall)
+    ctx.QQ.prototype.cancel = function(a) { // also not obfuscated
+        if (this.canceled)
             this.ij instanceof ctx.QQ && this.ij.cancel(); // ij is some kind of next or parent pointer
         else {
             if (this.$a) {
@@ -27,7 +27,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
                 a ? b.cancel(a) : (b.By--, 0 >= b.By && b.cancel())
             }
             this.gL ? this.gL.call(this.lH, this) : this.notCalled = !0;
-            this.shouldCheckSingleCall || (a = new ctx.CanceledError(this), ctx.checkSingleCall(this), ctx.TQ(this, !1, a))
+            this.canceled || (a = new ctx.CanceledError(this), ctx.checkSingleCall(this), ctx.TQ(this, !1, a))
         }
     };
     ctx.QQ.prototype.dH = function(a, b) {
@@ -35,13 +35,13 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         ctx.TQ(this, a, b)
     };
     ctx.TQ = function(a, b, c) {
-        a.shouldCheckSingleCall = !0; // true
+        a.canceled = !0; // true
         a.ij = c; // next pointer again
         a.Jq = !b;
         UQ(a)
     };
     ctx.checkSingleCall = function(what) { // ctx.SQ = ctx.checkSingleCall
-        if (what.shouldCheckSingleCall) { // *.xn = *.shouldCheckSingleCall
+        if (what.canceled) { // *.xn = *.canceled
             if (!what.notCalled) throw new AlreadyCalledError(what); // *.nE = *.notCalled
             what.notCalled = !1 // false
         }
@@ -55,7 +55,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
     };
     ctx.QQ.prototype.Zm = function(a, b, c) {
         this.Jw.push([a, b, c]);
-        this.shouldCheckSingleCall && UQ(this);
+        this.canceled && UQ(this);
         return this
     };
     ctx.QQ.prototype.then = function(a, b, c) {
@@ -78,7 +78,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
             })
         },
         UQ = function(a) {
-            if (a.errorTimeout && a.shouldCheckSingleCall && WQ(a)) { // gracefully clear timeout
+            if (a.errorTimeout && a.canceled && WQ(a)) { // gracefully clear timeout
                 var timeout = a.errorTimeout, // QQ.nx = QQ.errorTimeout
                     asyncError = asyncByTimeout[timeout];
                 asyncError && (ctx.A.clearTimeout(asyncError.timeout), delete asyncByTimeout[timeout]);
