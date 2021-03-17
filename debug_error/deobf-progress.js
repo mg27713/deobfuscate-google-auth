@@ -8,7 +8,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
  SPDX-License-Identifier: Apache-2.0
 */
     // looks like this part is the same as in the auth module. Should probably split into a common module at some point
-var iter, defineProperty, findGlobalRoot, globalRoot, compute, iterableIterator, La, Sa;
+var iter, defineProperty, findGlobalRoot, globalRoot, compute, iterableIterator, setPrototypeOf, checkStringArgs;
 ctx.ja = function(a) {
     return function() {
         return ctx.ea[a].apply(this, arguments)
@@ -109,37 +109,37 @@ _.Ha = function(a) {
         next: ma(a)
     }
 };
-_.Ja = "function" == typeof Object.create ? Object.create : function(a) {
-    var b = function() {};
-    b.prototype = a;
-    return new b
+ctx.clone = "function" == typeof Object.create ? Object.create : function(orig) { // ctx.Ja = ctx.clone
+    var constructor = function() {};
+    constructor.prototype = orig;
+    return new constructor
 };
-if ("function" == typeof Object.setPrototypeOf) La = Object.setPrototypeOf;
+if ("function" == typeof Object.setPrototypeOf) setPrototypeOf = Object.setPrototypeOf; // La = setPrototypeOf
 else {
-    var Ma;
-    a: {
-        var Na = {
-                a: !0
+    var couldSetProto;
+    protoTest: {
+        var testObj = {
+                prop: !0
             },
-            Pa = {};
+            clone = {};
         try {
-            Pa.__proto__ = Na;
-            Ma = Pa.a;
-            break a
+            clone.__proto__ = testObj;
+            couldSetProto = clone.prop;
+            break protoTest
         } catch (a) {}
-        Ma = !1
+        couldSetProto = !1
     }
-    La = Ma ? function(a, b) {
-        a.__proto__ = b;
-        if (a.__proto__ !== b) throw new TypeError(a + " is not extensible");
-        return a
+    setPrototypeOf = couldSetProto ? function(dst, src) {
+        dst.__proto__ = src;
+        if (dst.__proto__ !== src) throw new TypeError(dst + " is not extensible");
+        return dst
     } : null
 }
-_.Ra = La;
-Sa = function(a, b, c) {
-    if (null == a) throw new TypeError("The 'this' value for String.prototype." + c + " must not be null or undefined");
-    if (b instanceof RegExp) throw new TypeError("First argument to String.prototype." + c + " must not be a regular expression");
-    return a + ""
+ctx.setPrototypeOf = setPrototypeOf; // ctx.Ra = ctx.setPrototypeOf
+checkStringArgs = function(ths, arg1, prop) { // Sa = checkStringArgs
+    if (null == ths) throw new TypeError("The 'this' value for String.prototype." + prop + " must not be null or undefined");
+    if (arg1 instanceof RegExp) throw new TypeError("First argument to String.prototype." + prop + " must not be a regular expression");
+    return ths + ""
 };
 Da("String.prototype.startsWith", function(a) {
     return a ? a : function(b, c) {
