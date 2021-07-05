@@ -17,11 +17,11 @@ ctx.ja = function(a) {
         return ctx.ea[a].apply(this, arguments)
     }
 };
-_._DumpException = function(a) {
+ctx._DumpException = function(a) {
     throw a;
 };
-_.ea = [];
-iter = function(a) {
+ctx.ea = [];
+iter = function(a) { // ma = iter
     var b = 0;
     return function() {
         return b < a.length ? {
@@ -106,10 +106,10 @@ iterableIterator = function(a) {
     };
     return a
 };
-_.Ha = function(a) {
+ctx.symbolIterator = function(a) { // Ha = symbolIterator
     var b = "undefined" != typeof Symbol && Symbol.iterator && a[Symbol.iterator];
     return b ? b.call(a) : {
-        next: ma(a)
+        next: iter(a)
     }
 };
 ctx.clone = "function" == typeof Object.create ? Object.create : function(orig) { // ctx.Ja = ctx.clone
@@ -327,11 +327,11 @@ compute("WeakMap", function(OldWeakMap) {
     ensureHolderPresent("preventExtensions");
     ensureHolderPresent("seal");
     var idCounter = 0,
-        WeakMap = function(l) {
+        WeakMap = function(initialEntries) {
             this.mapId = (idCounter += Math.random() + 1).toString();
-            if (l) {
-                l = ctx.Ha(l);
-                for (var m; !(m = l.next()).done;) m = m.value, this.set(m[0], m[1])
+            if (initialEntries) {
+                initialEntries = ctx.symbolIterator(initialEntries);
+                for (var entry; !(entry = initialEntries.next()).done;) entry = entry.value, this.set(entry[0], entry[1])
             }
         };
     WeakMap.prototype.set = function(key, value) {
