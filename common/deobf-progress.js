@@ -32,7 +32,7 @@ iter = function(a) {
         }
     }
 };
-defineProperty = "function" == typeof Object.defineProperties ? Object.defineProperty : function(a, b, c) {
+defineProperty = "function" == typeof Object.defineProperties ? Object.defineProperty : function(a, b, c) { // oa = defineProperty
     if (a == Array.prototype || a == Object.prototype) return a;
     a[b] = c.value;
     return a
@@ -66,7 +66,7 @@ compute("Symbol", function(old) {
     if (old) return old;
     var b = function(e, f) {
         this.pO = e;
-        oa(this, "description", {
+        defineProperty(this, "description", {
             configurable: !0,
             writable: !0,
             value: f
@@ -251,108 +251,109 @@ compute("Object.entries", function(old) {
         return out
     }
 });
-    // "bookmark" here
-var Va = "function" == typeof Object.assign ? Object.assign : function(a, b) {
-    for (var c = 1; c < arguments.length; c++) {
-        var d = arguments[c];
-        if (d)
-            for (var e in d) Ua(d, e) && (a[e] = d[e])
+
+var assign = "function" == typeof Object.assign ? Object.assign : function(target, source1) { // Va = assign
+    for (var index = 1; index < arguments.length; index++) {
+        var source = arguments[index];
+        if (source)
+            for (var prop in source) hasOwnProperty(source, prop) && (target[prop] = source[prop])
     }
-    return a
+    return target
 };
-Da("Object.assign", function(a) {
-    return a || Va
+compute("Object.assign", function(old) {
+    return old || assign
 });
-Da("Array.prototype.flat", function(a) {
-    return a ? a : function(b) {
-        b = void 0 === b ? 1 : b;
-        for (var c = [], d = 0; d < this.length; d++) {
-            var e = this[d];
-            Array.isArray(e) && 0 < b ? (e = Array.prototype.flat.call(e, b - 1), c.push.apply(c, e)) : c.push(e)
+compute("Array.prototype.flat", function(old) {
+    return old ? old : function(depth) {
+        depth = void 0 === depth ? 1 : depth;
+        for (var out = [], index = 0; index < this.length; index++) {
+            var elem = this[index];
+            Array.isArray(elem) && 0 < depth ? (elem = Array.prototype.flat.call(elem, depth - 1), out.push.apply(out, elem)) : out.push(elem)
         }
-        return c
+        return out
     }
 });
-Da("Array.prototype.entries", function(a) {
-    return a ? a : function() {
-        return Ta(this, function(b, c) {
-            return [b, c]
+compute("Array.prototype.entries", function(old) {
+    return old ? old : function() {
+        return transformedIterator(this, function(index, element) {
+            return [index, element]
         })
     }
 });
-Da("WeakMap", function(a) {
-    function b() {}
+compute("WeakMap", function(OldWeakMap) {
+    function ValueHolder() {}
 
-    function c(l) {
-        var m = typeof l;
-        return "object" === m && null !== l || "function" === m
+    function validateKey(key) {
+        var type = typeof key;
+        return "object" === type && null !== key || "function" === type
     }
 
-    function d(l) {
-        if (!Ua(l, f)) {
-            var m = new b;
-            oa(l, f, {
-                value: m
+    function addValueHolder(obj) {
+        if (!hasOwnProperty(obj, valueHolderProp)) {
+            var holder = new ValueHolder;
+            defineProperty(obj, valueHolderProp, {
+                value: holder
             })
         }
     }
 
-    function e(l) {
-        var m = Object[l];
-        m && (Object[l] = function(n) {
-            if (n instanceof b) return n;
-            Object.isExtensible(n) && d(n);
-            return m(n)
+    function ensureHolderPresent(funcName) {
+        var func = Object[funcName];
+        func && (Object[funcName] = function(obj) {
+            if (obj instanceof ValueHolder) return obj;
+            Object.isExtensible(obj) && addValueHolder(obj);
+            return func(obj)
         })
     }
-    if (function() {
-            if (!a || !Object.seal) return !1;
+    if (function() { // fall back to OldWeakMap?
+            if (!OldWeakMap || !Object.seal) return !1;
             try {
-                var l = Object.seal({}),
-                    m = Object.seal({}),
-                    n = new a([
-                        [l, 2],
-                        [m, 3]
+                var key1 = Object.seal({}),
+                    key2 = Object.seal({}),
+                    testMap = new OldWeakMap([
+                        [key1, 2],
+                        [key2, 3]
                     ]);
-                if (2 != n.get(l) || 3 != n.get(m)) return !1;
-                n.delete(l);
-                n.set(m, 4);
-                return !n.has(l) && 4 == n.get(m)
-            } catch (p) {
+                if (2 != testMap.get(key1) || 3 != testMap.get(key2)) return !1;
+                testMap.delete(key1);
+                testMap.set(key2, 4);
+                return !testMap.has(key1) && 4 == testMap.get(key2)
+            } catch (error) {
                 return !1
             }
-        }()) return a;
-    var f = "$jscomp_hidden_" + Math.random();
-    e("freeze");
-    e("preventExtensions");
-    e("seal");
-    var g = 0,
-        k = function(l) {
-            this.Ca = (g += Math.random() + 1).toString();
+        }()) return OldWeakMap;
+    var valueHolderProp = "$jscomp_hidden_" + Math.random();
+    ensureHolderPresent("freeze");
+    ensureHolderPresent("preventExtensions");
+    ensureHolderPresent("seal");
+    var idCounter = 0,
+        WeakMap = function(l) {
+            this.mapId = (idCounter += Math.random() + 1).toString();
             if (l) {
-                l = _.Ha(l);
+                l = ctx.Ha(l);
                 for (var m; !(m = l.next()).done;) m = m.value, this.set(m[0], m[1])
             }
         };
-    k.prototype.set = function(l, m) {
-        if (!c(l)) throw Error("b");
-        d(l);
-        if (!Ua(l, f)) throw Error("c`" + l);
-        l[f][this.Ca] = m;
+    WeakMap.prototype.set = function(key, value) {
+        if (!validateKey(key)) throw Error("b");
+        addValueHolder(key);
+        if (!hasOwnProperty(key, valueHolderProp)) throw Error("c`" + key);
+        key[valueHolderProp][this.mapId] = value;
         return this
     };
-    k.prototype.get = function(l) {
-        return c(l) && Ua(l, f) ? l[f][this.Ca] : void 0
+    WeakMap.prototype.get = function(key) {
+        return validateKey(key) && hasOwnProperty(key, valueHolderProp) ? key[valueHolderProp][this.mapId] : void 0
     };
-    k.prototype.has = function(l) {
-        return c(l) && Ua(l, f) && Ua(l[f], this.Ca)
+    WeakMap.prototype.has = function(key) {
+        return validateKey(key) && hasOwnProperty(key, valueHolderProp) && hasOwnProperty(key[valueHolderProp], this.mapId)
     };
-    k.prototype.delete =
-        function(l) {
-            return c(l) && Ua(l, f) && Ua(l[f], this.Ca) ? delete l[f][this.Ca] : !1
+    WeakMap.prototype.delete =
+        function(key) {
+            return validateKey(key) && hasOwnProperty(key, valueHolderProp) && hasOwnProperty(key[valueHolderProp], this.mapId) ? delete key[valueHolderProp][this.mapId] : !1
         };
-    return k
+    return WeakMap
 });
+    // bookmark
 Da("Map", function(a) {
     if (function() {
             if (!a || "function" != typeof a || !a.prototype.entries || "function" != typeof Object.seal) return !1;
