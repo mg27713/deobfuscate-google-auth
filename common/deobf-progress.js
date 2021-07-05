@@ -220,12 +220,12 @@ compute("Array.from", function(old) {
         return out
     }
 });
-Da("Object.is", function(old) {
+compute("Object.is", function(old) {
     return old ? old : function(obj1, obj2) {
         return obj1 === obj2 ? 0 !== obj1 || 1 / obj1 === 1 / obj2 : obj1 !== obj1 && obj2 !== obj2
     }
 });
-Da("Array.prototype.includes", function(old) {
+compute("Array.prototype.includes", function(old) {
     return old ? old : function(thing, start) {
         var array = this;
         array instanceof String && (array = String(d));
@@ -238,19 +238,20 @@ Da("Array.prototype.includes", function(old) {
         return !1
     }
 });
-Da("String.prototype.includes", function(a) {
-    return a ? a : function(b, c) {
-        return -1 !== Sa(this, b, "includes").indexOf(b, c || 0)
+compute("String.prototype.includes", function(old) {
+    return old ? old : function(str, pos) {
+        return -1 !== checkStringArgs(this, str, "includes").indexOf(str, pos || 0)
     }
 });
-Da("Object.entries", function(a) {
-    return a ? a : function(b) {
-        var c = [],
-            d;
-        for (d in b) Ua(b, d) && c.push([d, b[d]]);
-        return c
+compute("Object.entries", function(old) {
+    return old ? old : function(obj) {
+        var out = [],
+            entry;
+        for (entry in obj) hasOwnProperty(obj, entry) && out.push([entry, obj[entry]]);
+        return out
     }
 });
+    // "bookmark" here
 var Va = "function" == typeof Object.assign ? Object.assign : function(a, b) {
     for (var c = 1; c < arguments.length; c++) {
         var d = arguments[c];
