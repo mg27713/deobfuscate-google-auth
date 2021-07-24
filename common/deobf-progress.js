@@ -354,7 +354,7 @@ compute("WeakMap", function(OldWeakMap) {
     return WeakMap
 });
 
-Da("Map", function(OldMap) {
+compute("Map", function(OldMap) {
     if (function() { // Test time, just like with WeakMap
             if (!OldMap || "function" != typeof OldMap || !OldMap.prototype.entries || "function" != typeof Object.seal) return !1;
             try {
@@ -381,7 +381,7 @@ Da("Map", function(OldMap) {
     var idKeys = new WeakMap,
         Map = function(initialEntries) {
             this.entryLists = {};
-            this.Ze =
+            this.linkedEntries = // Ze = linkedEntries
                 emptyLinkedList();
             this.size = 0;
             if (initialEntries) {
@@ -394,22 +394,22 @@ Da("Map", function(OldMap) {
         var struct = entryStruct(this, key);
         struct.list || (struct.list = this.entryLists[struct.id] = []);
         struct.entry ? struct.entry.value = value : (struct.entry = {
-            next: this.Ze,
-            ej: this.Ze.ej,
-            head: this.Ze,
+            next: this.linkedEntries,
+            prev: this.linkedEntries.prev,
+            head: this.linkedEntries,
             key: key,
             value: value
-        }, struct.list.push(struct.entry), this.Ze.ej.next = struct.entry, this.Ze.ej = struct.entry, this.size++);
+        }, struct.list.push(struct.entry), this.linkedEntries.prev.next = struct.entry, this.linkedEntries.prev = struct.entry, this.size++);
         return this
     };
     Map.prototype.delete = function(key) {
         struct = entryStruct(this, key);
-        return struct.entry && struct.list ? (struct.list.splice(struct.index, 1), struct.list.length || delete this.entryLists[struct.id], struct.we.ej.next = struct.we.next, struct.we.next.ej =
-            struct.we.ej, struct.we.head = null, this.size--, !0) : !1
+        return struct.entry && struct.list ? (struct.list.splice(struct.index, 1), struct.list.length || delete this.entryLists[struct.id], struct.entry.prev.next = struct.entry.next, struct.entry.next.prev =
+            struct.entry.prev, struct.entry.head = null, this.size--, !0) : !1
     };
     Map.prototype.clear = function() {
         this.entryLists = {};
-        this.Ze = this.Ze.ej = emptyLinkedList();
+        this.linkedEntries = this.linkedEntries.prev = emptyLinkedList(); // maybe ej is a linked history?
         this.size = 0
     };
     Map.prototype.has = function(key) {
@@ -420,18 +420,18 @@ Da("Map", function(OldMap) {
         return (entry = entryStruct(this, key).entry) && entry.value
     };
     Map.prototype.entries = function() {
-        return e(this, function(k) {
-            return [k.key, k.value]
+        return iter(this, function(entry) {
+            return [entry.key, entry.value]
         })
     };
     Map.prototype.keys = function() {
-        return e(this, function(k) {
-            return k.key
+        return iter(this, function(entry) {
+            return entry.key
         })
     };
     Map.prototype.values = function() {
-        return e(this, function(k) {
-            return k.value
+        return iter(this, function(entry) {
+            return entry.value
         })
     };
     Map.prototype.forEach = function(k, l) {
@@ -451,7 +451,7 @@ Da("Map", function(OldMap) {
                         id: idKey,
                         list: entry,
                         index: index,
-                        entry: realEntry
+                        entry: realEntry // we: entry
                     }
                 }
             return {
@@ -461,15 +461,15 @@ Da("Map", function(OldMap) {
                 entry: void 0
             }
         },
-        e = function(map, l) {
-            var list = map.Ze;
+        iter = function(map, getValue) { // l: func, param (k) = struct entry
+            var list = map.Ze; // Ze is a linked list including the entries
             return iterableIterator(function() {
                 if (list) {
-                    for (; list.head != map.list;) list = list.ej;
-                    for (; list.next != list.head;) return list =
+                    for (; list.head != map.list;) list = list.prev; // ej is an interlist link?
+                    for (; list.next != list.head;) return list = // why is this a for loop?
                         list.next, {
                             done: !1,
-                            value: l(list)
+                            value: getValue(list)
                         };
                     list = null
                 }
@@ -481,7 +481,7 @@ Da("Map", function(OldMap) {
         },
         emptyLinkedList = function() {
             var list = {};
-            return list.ej = list.next = list.head = list
+            return list.prev = list.next = list.head = list // list.ej = list.prev (which took me forever to realize)
         },
         g = 0;
     return Map
