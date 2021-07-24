@@ -549,23 +549,24 @@ compute("Set", function(OldSet) {
     };
     return Set // appears to just be a cover over the Map impl
 });
-_.q = {};
-_.Wa = _.Wa || {};
-_.A = this || self;
-_.Ya = "closure_uid_" + (1E9 * Math.random() >>> 0);
-_.C = function(a, b) {
-    a = a.split(".");
-    var c = _.A;
-    a[0] in c || "undefined" == typeof c.execScript || c.execScript("var " + a[0]);
-    for (var d; a.length && (d = a.shift());) a.length || void 0 === b ? c = c[d] && c[d] !== Object.prototype[d] ? c[d] : c[d] = {} : c[d] = b
+ctx.q = {};
+ctx.Wa = ctx.Wa || {}; // weird definition
+ctx.self = this || self; // ctx.A = ctx.self
+ctx.Ya = "closure_uid_" + (1E9 * Math.random() >>> 0);
+ctx.setMultilayer = function(name, val) { // a is a.b.c.d name from window, ctx.C = ctx.setMultilayer
+    name = name.split(".");
+    var obj = ctx.self;
+    name[0] in c || "undefined" == typeof c.execScript || c.execScript("var " + name[0]); // a[0] must be a valid symbol
+    for (var part; name.length && (part = name.shift());)
+        name.length || void 0 === val ? obj = obj[part] && obj[part] !== Object.prototype[part] ? obj[part] : obj[part] = {} : obj[part] = val
 };
-_.K = function(a, b) {
+ctx.K = function(a, b) {
     function c() {}
     c.prototype = b.prototype;
     a.T = b.prototype;
     a.prototype = new c;
     a.prototype.constructor = a;
-    a.yp = function(d, e, f) {
+    a.yp = function(d, e, placeholderArg) { // varargs
         for (var g = Array(arguments.length - 2), k = 2; k < arguments.length; k++) g[k - 2] = arguments[k];
         return b.prototype[e].apply(d, g)
     }
