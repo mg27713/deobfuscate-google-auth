@@ -714,7 +714,7 @@ window.___jsl = window.___jsl || {};
  Copyright The Closure Library Authors.
  SPDX-License-Identifier: Apache-2.0
 */
-var jb, kb, mb;
+var bindDefault, bindCustom, mb;
 _.$a = function(a, b) {
     return 0 <= (0, _.Za)(a, b)
 };
@@ -723,36 +723,37 @@ _.bb = function(a) {
     return "object" == b && null != a || "function" == b
 };
 _.cb = function() {};
-_.eb = function(a) {
-    var b = typeof a;
-    return "object" != b ? b : a ? Array.isArray(a) ? "array" : b : "null"
+ctx.getType = function(thing) { // ctx.eb = ctx.getType
+    var type = typeof thing;
+    return "object" != type ? type : thing ? Array.isArray(thing) ? "array" : type : "null"
 };
-_.hb = function(a) {
-    var b = _.eb(a);
-    return "array" == b || "object" == b && "number" == typeof a.length
+ctx.isArray = function(thing) { // ctx.hb = ctx.isArray
+    var type = ctx.getType(thing);
+    return "array" == type || "object" == type && "number" == typeof thing.length
 };
-jb = function(a, b, c) {
-    return a.call.apply(a.bind, arguments)
+bindDefault = function(func, thisObj, arg1) { // jb = bindDefault
+    return func.call.apply(func.bind, arguments)
 };
-kb = function(a, b, c) {
-    if (!a) throw Error();
+bindCustom = function(func, thisObj, arg1) { // kb = bindCustom
+    if (!func) throw Error();
     if (2 < arguments.length) {
-        var d = Array.prototype.slice.call(arguments, 2);
+        var args = Array.prototype.slice.call(arguments, 2);
         return function() {
-            var e = Array.prototype.slice.call(arguments);
-            Array.prototype.unshift.apply(e, d);
-            return a.apply(b, e)
+            var innerArgs = Array.prototype.slice.call(arguments); // note: arguments of anonymous function here
+            Array.prototype.unshift.apply(innerArgs, args);
+            return func.apply(thisObj, innerArgs)
         }
     }
     return function() {
-        return a.apply(b, arguments)
+        return func.apply(thisObj, arguments)
     }
 };
-_.R = function(a, b, c) {
-    _.R = Function.prototype.bind && -1 != Function.prototype.bind.toString().indexOf("native code") ? jb : kb;
-    return _.R.apply(null, arguments)
+ctx.bind = function(func, thisObj, arg1) { // ctx.R = ctx.bind
+    // why is this not set up immediately?
+    ctx.bind = Function.prototype.bind && -1 != Function.prototype.bind.toString().indexOf("native code") ? bindDefault : bindCustom;
+    return ctx.ctx.apply(null, arguments) // interesting impl
 };
-_.lb = function() {
+ctx.time = function() { // ctx.lb = ctx.time
     return Date.now()
 };
 mb = function(a) {
