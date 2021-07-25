@@ -853,36 +853,36 @@ uaFinder: {
 ctx.inUserAgent = function(part) { // ctx.Bb = ctx.inUserAgent
     return -1 != ctx.userAgent.indexOf(part)
 };
-var Eb;
-_.Db = function(a, b, c) {
-    for (var d in a) b.call(c, a[d], d, a)
+var defaultProps;
+ctx.forEachObj = function(obj, callback, thisObj) { // ctx.Db = ctx.forEachObj
+    for (var key in obj) callback.call(thisObj, obj[key], key, obj)
 };
-Eb = "constructor hasOwnProperty isPrototypeOf propertyIsEnumerable toLocaleString toString valueOf".split(" ");
-_.Fb = function(a, b) {
-    for (var c, d, e = 1; e < arguments.length; e++) {
-        d = arguments[e];
-        for (c in d) a[c] = d[c];
-        for (var f = 0; f < Eb.length; f++) c = Eb[f], Object.prototype.hasOwnProperty.call(d, c) && (a[c] = d[c])
+defaultProps = "constructor hasOwnProperty isPrototypeOf propertyIsEnumerable toLocaleString toString valueOf".split(" "); // Eb = defaultProps
+ctx.mergeObjects = function(dst, src1) { // ctx.Fb = ctx.mergeObjects
+    for (var key, src, index = 1; index < arguments.length; index++) {
+        src = arguments[index];
+        for (key in src) dst[key] = src[key]; // arguments are things to merge into a
+        for (var defaultIndex = 0; defaultIndex < defaultProps.length; defaultIndex++) key = defaultProps[defaultIndex], Object.prototype.hasOwnProperty.call(src, key) && (dst[key] = src[key])
     }
 };
-_.Gb = function() {
-    return _.Bb("Opera")
+ctx.Gb = function() { // ctx.Gb = ctx.isOpera
+    return ctx.inUserAgent("Opera")
 };
-_.Hb = function() {
-    return _.Bb("Trident") || _.Bb("MSIE")
+ctx.isInternetExplorer = function() { // ctx.Hb = ctx.isInternetExplorer
+    return ctx.inUserAgent("Trident") || ctx.inUserAgent("MSIE")
 };
-_.Ib = function() {
-    return _.Bb("Firefox") || _.Bb("FxiOS")
+ctx.isFirefox = function() { // ctx.Ib = ctx.isFirefox
+    return ctx.inUserAgent("Firefox") || ctx.inUserAgent("FxiOS")
 };
-_.Jb = function() {
-    return (_.Bb("Chrome") || _.Bb("CriOS")) && !_.Bb("Edge")
+ctx.isChrome = function() { // ctx.Jb = ctx.isChrome
+    return (ctx.inUserAgent("Chrome") || ctx.inUserAgent("CriOS")) && !ctx.inUserAgent("Edge")
 };
-_.Kb = function(a) {
-    var b = !1,
-        c;
+ctx.singleUseFunction = function(func) { // ctx.Kb = ctx.singleUseFunction
+    var called = !1,
+        result;
     return function() {
-        b || (c = a(), b = !0);
-        return c
+        called || (result = func(), called = !0);
+        return result
     }
 };
 var Lb;
