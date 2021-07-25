@@ -751,7 +751,7 @@ bindCustom = function(func, thisObj, arg1) { // kb = bindCustom
 ctx.bind = function(func, thisObj, arg1) { // ctx.R = ctx.bind
     // why is this not set up immediately?
     ctx.bind = Function.prototype.bind && -1 != Function.prototype.bind.toString().indexOf("native code") ? bindDefault : bindCustom;
-    return ctx.ctx.apply(null, arguments) // interesting impl
+    return ctx.bind.apply(null, arguments) // interesting impl
 };
 ctx.time = function() { // ctx.lb = ctx.time
     return Date.now()
@@ -818,13 +818,13 @@ ctx.trim = String.prototype.trim ? function(str) { // ctx.tb = ctx.trim
 } : function(str) {
     return /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(str)[1]
 };
-ctx.strcmp = function(a, b) { // ctx.wb = strcmp
+ctx.strcmp = function(str1, str2) { // ctx.wb = strcmp
     var res = 0; // seems like a strcmp-like thing?
-    a = (0, ctx.trim)(String(a)).split("."); // why is there a 0 expression there? We should really begin to question their sanity, considering that they've tried to reduce the size of this to the bare minimum.
-    b = (0, ctx.trim)(String(b)).split("."); // anyway, a and b must be stringlike
+    str1 = (0, ctx.trim)(String(str1)).split("."); // why is there a 0 expression there? We should really begin to question their sanity, considering that they've tried to reduce the size of this to the bare minimum.
+    str2 = (0, ctx.trim)(String(str2)).split("."); // anyway, a and b must be stringlike
     for (var len = Math.max(a.length, b.length), index = 0; 0 == res && index < len; index++) {
-        var part1 = a[index] || "",
-            part2 = b[index] || "";
+        var part1 = str1[index] || "",
+            part2 = str2[index] || "";
         do {
             part1 = /(\d*)(\D*)(.*)/.exec(part1) || ["", "", "", ""]; // number-letter-any recursion, interesting
             part2 = /(\d*)(\D*)(.*)/.exec(g) || ["", "", "", ""];
@@ -834,24 +834,24 @@ ctx.strcmp = function(a, b) { // ctx.wb = strcmp
             part2 = part2[3]
         } while (0 == res)
     }
-    returnres
+    return res
 };
 cmp = function(num1, num2) { // vb = cmp
     return num1 < num2 ? -1 : num1 > num2 ? 1 : 0
 };
-a: {
-    var yb = _.A.navigator;
-    if (yb) {
-        var zb = yb.userAgent;
-        if (zb) {
-            _.xb = zb;
-            break a
+uaFinder: {
+    var navigator = ctx.self.navigator;
+    if (navigator) {
+        var userAgent = navigator.userAgent;
+        if (userAgent) {
+            ctx.userAgent = userAgent; // ctx.xb = ctx.userAgent
+            break uaFinder
         }
     }
-    _.xb = ""
+    ctx.userAgent = ""
 }
-_.Bb = function(a) {
-    return -1 != _.xb.indexOf(a)
+ctx.inUserAgent = function(part) { // ctx.Bb = ctx.inUserAgent
+    return -1 != ctx.userAgent.indexOf(part)
 };
 var Eb;
 _.Db = function(a, b, c) {
