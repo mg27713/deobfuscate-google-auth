@@ -714,7 +714,7 @@ window.___jsl = window.___jsl || {};
  Copyright The Closure Library Authors.
  SPDX-License-Identifier: Apache-2.0
 */
-var bindDefault, bindCustom, mb;
+var bindDefault, bindCustom, allowAll;
 _.$a = function(a, b) {
     return 0 <= (0, _.Za)(a, b)
 };
@@ -756,8 +756,8 @@ ctx.bind = function(func, thisObj, arg1) { // ctx.R = ctx.bind
 ctx.time = function() { // ctx.lb = ctx.time
     return Date.now()
 };
-mb = function(a) {
-    return a
+allowAll = function(thing) { // mb = allowAll
+    return thing
 };
 ctx.indexOf = Array.prototype.indexOf ? function(array, elem) { // um, you did it initially this time? ctx.Za = ctx.indexOf
     return Array.prototype.indexOf.call(array, elem, void 0)
@@ -885,85 +885,85 @@ ctx.singleUseFunction = function(func) { // ctx.Kb = ctx.singleUseFunction
         return result
     }
 };
-var Lb;
-_.Mb = function() {
-    if (void 0 === Lb) {
-        var a = null,
-            b = _.A.trustedTypes;
-        if (b && b.createPolicy) try {
-            a = b.createPolicy("goog#html", {
-                createHTML: mb,
-                createScript: mb,
-                createScriptURL: mb
+var trustedPolicy;
+ctx.getTrustedPolicy = function() { // ctx.Mb = ctx.getTrustedPolicy
+    if (void 0 === trustedPolicy) {
+        var policy = null,
+            trustedTypes = ctx.self.trustedTypes;
+        if (trustedTypes && trustedTypes.createPolicy) try {
+            policy = trustedTypes.createPolicy("goog#html", {
+                createHTML: allowAll,
+                createScript: allowAll,
+                createScriptURL: allowAll
             })
-        } catch (c) {
-            _.A.console && _.A.console.error(c.message)
+        } catch (error) {
+            ctx.self.console && ctx.self.console.error(error.message)
         }
-        Lb = a
+        trustedPolicy = policy
     }
-    return Lb
+    return trustedPolicy
 };
-var Ob, Nb;
-_.Pb = function(a, b) {
+var Ob, Nb; // tables or something
+ctx.Pb = function(a, b) { // class constructor
     this.EN = a === Nb && b || "";
     this.gR = Ob
 };
-_.Pb.prototype.Ph = !0;
-_.Pb.prototype.xd = _.ja(4);
-_.Qb = function(a) {
-    return a instanceof _.Pb && a.constructor === _.Pb && a.gR === Ob ? a.EN : "type_error:Const"
+ctx.Pb.prototype.Ph = !0;
+ctx.Pb.prototype.xd = ctx.ja(4);
+ctx.Qb = function(a) {
+    return a instanceof ctx.Pb && a.constructor === ctx.Pb && a.gR === Ob ? a.EN : "type_error:Const"
 };
-_.Rb = function(a) {
-    return new _.Pb(Nb, a)
+ctx.Rb = function(a) {
+    return new ctx.Pb(Nb, a)
 };
 Ob = {};
 Nb = {};
-_.Ub = function(a, b) {
-    this.OL = b === _.Sb ? a : ""
+ctx.Ub = function(a, b) { // another class
+    this.OL = b === ctx.Sb ? a : ""
 };
-_.Ub.prototype.Ph = !0;
-_.Ub.prototype.xd = _.ja(3);
-_.Ub.prototype.zB = !0;
-_.Ub.prototype.Hh = _.ja(6);
-_.Sb = {};
-_.Wb = new _.Ub("about:invalid#zClosurez", _.Sb);
-_.Yb = function(a, b) {
-    this.NL = b === _.Xb ? a : ""
+ctx.Ub.prototype.Ph = !0; // Pb and Ub are probably different impls of the same thing
+ctx.Ub.prototype.xd = ctx.ja(3);
+ctx.Ub.prototype.zB = !0;
+ctx.Ub.prototype.Hh = ctx.ja(6);
+ctx.Sb = {};
+ctx.Wb = new ctx.Ub("about:invalid#zClosurez", ctx.Sb); // arg1 of Ub is a URL
+ctx.Yb = function(a, b) { // yet another constructor
+    this.NL = b === ctx.Xb ? a : ""
 };
-_.Yb.prototype.Ph = !0;
-_.Yb.prototype.xd = _.ja(2);
-_.Xb = {};
-_.Zb = new _.Yb("", _.Xb);
-_.$b = {};
-_.ac = function(a, b) {
-    this.ML = b === _.$b ? a : "";
-    this.Ph = !0
+ctx.Yb.prototype.Ph = !0;
+ctx.Yb.prototype.xd = ctx.ja(2);
+ctx.Xb = {};
+ctx.Zb = new ctx.Yb("", ctx.Xb);
+ctx.$b = {};
+ctx.ac = function(a, b) { // why so many constructors
+    this.ML = b === ctx.$b ? a : "";
+    this.Ph = !0 // and why is this different
 };
-_.cc = function(a) {
-    a = _.Qb(a);
-    return 0 === a.length ? bc : new _.ac(a, _.$b)
+ctx.cc = function(a) {
+    a = ctx.Qb(a); // gets a.EN
+    return 0 === a.length ? bc : new ctx.ac(a, ctx.$b)
 };
-_.ac.prototype.xd = _.ja(1);
-var bc = new _.ac("", _.$b);
-var dc;
-_.ec = function(a, b, c) {
-    this.LL = c === dc ? a : "";
+ctx.ac.prototype.xd = ctx.ja(1);
+var bc = new ctx.ac("", ctx.$b); // empty ac
+var dc; // yet another dummy object?
+ctx.ec = function(a, b, c) { // back to the lame constructors. a is a form of HTML.
+    this.LL = c === dc ? a : ""; // LL is a form of HTML
     this.GS = b
 };
-_.ec.prototype.zB = !0;
-_.ec.prototype.Hh = _.ja(5);
-_.ec.prototype.Ph = !0;
-_.ec.prototype.xd = _.ja(0);
-_.fc = function(a) {
-    if (a instanceof _.ec && a.constructor === _.ec) return a.LL;
-    _.eb(a);
+ctx.ec.prototype.zB = !0;
+ctx.ec.prototype.Hh = ctx.ja(5);
+ctx.ec.prototype.Ph = !0;
+ctx.ec.prototype.xd = ctx.ja(0);
+ctx.fc = function(a) {
+    if (a instanceof ctx.ec && a.constructor === ctx.ec) return a.LL;
+    ctx.getType(a); // what's the point of this?
     return "type_error:SafeHtml"
 };
 dc = {};
-_.gc = function(a, b) {
-    var c = _.Mb();
-    a = c ? c.createHTML(a) : a;
-    return new _.ec(a, b, dc)
+ctx.gc = function(a, b) {
+    var policy = ctx.getTrustedPolicy();
+    a = policy ? policy.createHTML(a) : a;
+    return new ctx.ec(a, b, dc)
 };
 _.hc = new _.ec(_.A.trustedTypes && _.A.trustedTypes.emptyHTML || "", 0, dc);
 _.ic = _.gc("<br>", 0);
