@@ -792,17 +792,17 @@ ctx.filter = Array.prototype.filter ? function(array, callback) { // ctx.pb = ct
         }
     return out
 };
-_.qb = Array.prototype.map ? function(a, b) {
-    return Array.prototype.map.call(a, b, void 0)
-} : function(a, b) {
-    for (var c = a.length, d = Array(c), e = "string" === typeof a ? a.split("") : a, f = 0; f < c; f++) f in e && (d[f] = b.call(void 0, e[f], f, a));
-    return d
+ctx.map = Array.prototype.map ? function(array, transform) { // ctx.qb = ctx.map
+    return Array.prototype.map.call(array, transform, void 0)
+} : function(array, transform) {
+    for (var len = array.length, out = Array(len), realArray = "string" === typeof array ? array.split("") : array, index = 0; index < len; index++) index in realArray && (out[index] = transform.call(void 0, realArray[index], index, array));
+    return out
 };
-_.rb = Array.prototype.some ? function(a, b, c) {
-    return Array.prototype.some.call(a, b, c)
-} : function(a, b, c) {
-    for (var d = a.length, e = "string" === typeof a ? a.split("") : a, f = 0; f < d; f++)
-        if (f in e && b.call(c, e[f], f, a)) return !0;
+ctx.rb = Array.prototype.some ? function(array, predicate, thisArg) {
+    return Array.prototype.some.call(array, predicate, thisArg)
+} : function(array, predicate, thisArg) {
+    for (var len = array.length, realArray = "string" === typeof array ? array.split("") : array, index = 0; index < len; index++)
+        if (index in realArray && predicate.call(thisArg, realArray[index], index, array)) return !0;
     return !1
 };
 _.sb = Array.prototype.every ? function(a, b, c) {
