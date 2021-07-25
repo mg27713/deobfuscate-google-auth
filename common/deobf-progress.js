@@ -954,39 +954,39 @@ ctx.ec.prototype.zB = !0;
 ctx.ec.prototype.Hh = ctx.ja(5);
 ctx.ec.prototype.Ph = !0;
 ctx.ec.prototype.xd = ctx.ja(0);
-ctx.fc = function(a) {
+ctx.fc = function(a) { // seems to get the LL from an EC, which is HTML
     if (a instanceof ctx.ec && a.constructor === ctx.ec) return a.LL;
     ctx.getType(a); // what's the point of this?
     return "type_error:SafeHtml"
 };
 dc = {};
-ctx.gc = function(a, b) {
+ctx.gc = function(a, b) { // creates an ec for the HTML
     var policy = ctx.getTrustedPolicy();
     a = policy ? policy.createHTML(a) : a;
     return new ctx.ec(a, b, dc)
 };
-_.hc = new _.ec(_.A.trustedTypes && _.A.trustedTypes.emptyHTML || "", 0, dc);
-_.ic = _.gc("<br>", 0);
-_.jc = _.Kb(function() {
-    var a = document.createElement("div"),
-        b = document.createElement("div");
-    b.appendChild(document.createElement("div"));
-    a.appendChild(b);
-    b = a.firstChild.firstChild;
-    a.innerHTML = _.fc(_.hc);
-    return !b.parentElement
+ctx.hc = new ctx.ec(ctx.self.trustedTypes && ctx.self.trustedTypes.emptyHTML || "", 0, dc);
+ctx.ic = ctx.gc("<br>", 0); // ec.GS is a number
+ctx.testDivBehavior = ctx.singleUseFunction(function() { // ctx.jc = ctx.testDivBehavior
+    var div1 = document.createElement("div"),
+        div2 = document.createElement("div");
+    div2.appendChild(document.createElement("div"));
+    div1.appendChild(div2); // a contains b contains another div
+    var div3 = div1.firstChild.firstChild; // changed fom b
+    div1.innerHTML = ctx.fc(ctx.hc); // puts empty HTML in div1
+    return !div3.parentElement
 });
-_.kc = String.prototype.repeat ? function(a, b) {
-    return a.repeat(b)
-} : function(a, b) {
-    return Array(b + 1).join(a)
+ctx.repeat = String.prototype.repeat ? function(str, times) { // ctx.kc = ctx.repeat
+    return str.repeat(times)
+} : function(str, times) {
+    return Array(times + 1).join(str)
 };
-_.lc = 2147483648 * Math.random() | 0;
-_.mc = function() {
-    return _.Bb("iPhone") && !_.Bb("iPod") && !_.Bb("iPad")
+ctx.lc = 2147483648 * Math.random() | 0;
+ctx.isiPhone = function() { // ctx.mc = ctx.isiPhone
+    return ctx.inUserAgent("iPhone") && !ctx.inUserAgent("iPod") && !ctx.inUserAgent("iPad")
 };
-_.nc = function() {
-    return _.mc() || _.Bb("iPad") || _.Bb("iPod")
+ctx.isiOS = function() { // ctx.nc = ctx.isiOS (including iPadOS)
+    return ctx.isiPhone() || ctx.inUserAgent("iPad") || ctx.inUserAgent("iPod") // very weird impl
 };
 var oc = function(a) {
     oc[" "](a);
