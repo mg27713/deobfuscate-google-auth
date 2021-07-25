@@ -1002,7 +1002,7 @@ ctx.pc = function(a, b) {
 ctx.computeIfAbsent = function(obj, key, func) { // ctx.qc = ctx.computeIfAbsent
     return Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : obj[key] = func(key)
 };
-var Gc, Jc, Oc, Sc;
+var getDocumentMode, browserVersion, Oc, Sc;
 ctx.isOpera = ctx.checkIsOpera(); // ctx.rc = ctx.isOpera
 ctx.isInternetExplorer = ctx.checkIsInternetExplorer(); // ctx.sc = ctx.isInternetExplorer
 ctx.isEdge = ctx.inUserAgent("Edge"); // ctx.tc = ctx.isEdge
@@ -1018,28 +1018,29 @@ ctx.isiPhone = ctx.checkIsiPhone(); // ctx.Cc = ctx.isiPhone
 ctx.isiPad = ctx.inUserAgent("iPad"); // ctx.Dc = ctx.isiPad
 ctx.isiPod = ctx.inUserAgent("iPod"); // ctx.Ec = ctx.isiPod
 ctx.isiOS = ctx.checkIsiOS(); // ctx.Fc = ctx.isiOS
-Gc = function() {
-    var a = _.A.document;
-    return a ? a.documentMode : void 0
+getDocumentMode = function() { // Gc = getDocumentMode
+    var document = ctx.window.document;
+    return document ? document.documentMode : void 0
 };
-a: {
-    var Kc = "",
-        Lc = function() {
-            var a = _.xb;
-            if (_.vc) return /rv:([^\);]+)(\)|;)/.exec(a);
-            if (_.tc) return /Edge\/([\d\.]+)/.exec(a);
-            if (_.sc) return /\b(?:MSIE|rv)[: ]([^\);]+)(\)|;)/.exec(a);
-            if (_.wc) return /WebKit\/(\S+)/.exec(a);
-            if (_.rc) return /(?:Version)[ \/]?(\S+)/.exec(a)
-        }();Lc && (Kc = Lc ? Lc[1] : "");
-    if (_.sc) {
-        var Mc = Gc();
-        if (null != Mc && Mc > parseFloat(Kc)) {
-            Jc = String(Mc);
-            break a
+findBrowserVersion: {
+    var brVersion = "",
+        version = function() {
+            var userAgent = ctx.userAgent;
+            if (ctx.isFirefox) return /rv:([^\);]+)(\)|;)/.exec(userAgent);
+            if (ctx.isEdge) return /Edge\/([\d\.]+)/.exec(userAgent);
+            if (ctx.isInternetExplorer) return /\b(?:MSIE|rv)[: ]([^\);]+)(\)|;)/.exec(userAgent);
+            if (ctx.isWebKitLike) return /WebKit\/(\S+)/.exec(userAgent);
+            if (ctx.isOpera) return /(?:Version)[ \/]?(\S+)/.exec(userAgent)
+        }();
+    version && (brVersion = version ? version[1] : ""); // I fail to understand this as well
+    if (ctx.isInternetExplorer) {
+        var documentMode = getDocumentMode();
+        if (null != documentMode && documentMode > parseFloat(brVersion)) {
+            browserVersion = String(documentMode);
+            break findBrowserVersion
         }
     }
-    Jc = Kc
+    browserVersion = brVersion // Jc = browserVersion
 }
 _.Nc = Jc;
 Oc = {};
